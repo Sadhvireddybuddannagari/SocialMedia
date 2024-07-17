@@ -1,8 +1,19 @@
-import React from 'react';
-import {TbSocial} from 'react-icons/tb';
-import { TextInput } from '../components';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form'
+import { TbSocial } from 'react-icons/tb';
+import { CustomButton, Loading, TextInput } from '../components';
+import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
-const Login = () =>{
+const Login = () => {
+    const {
+        register, handleSubmit, formState: { errors },
+    } = useForm({
+        mode: "onChange",
+    })
+    const [errMsg, setErrMsg] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const dispatch = useDispatch
     return (
         <div className='bg-bgColor w-full h-[100vh] flex items-center justify-center p-6'>
             <div className='w-full md:w-2/3 h-fit lg:h-full 2xl:h-5/6 py-8 lg:py-0 flex bg-primary rounded-xl overflow-hidden shadow-xl'>
@@ -21,9 +32,56 @@ const Login = () =>{
 
                     <form className='py-8 flex flex-col gap-5'>
                         <TextInput
-                        
+                            name="email" placeholder="email@example.com"
+                            label="Email Address"
+                            type="email"
+                            register={register("email", {
+                                required: '"Email Address is required'
+                            })}
+                            styles="w-full rounded-full" labelStyle="ml-2"
+                            error={errors.email ? errors.email.message : ""}
                         />
+                        <TextInput
+                            name="password" placeholder="Password"
+                            label="Password "
+                            type="password"
+                            register={register("password", {
+                                required: 'Password is required!'
+                            })}
+                            styles="w-full rounded-full" labelStyle="ml-2"
+                            error={errors.password ? errors.password.message : ""}
+                        />
+                        <Link to='/reset-password'
+                            className='text-sm text-right text-blue font-semibold'>
+                            Forgot Password?
+                        </Link>
+                        {errMsg?.message && (
+                            <span className={`text-sm ${errMsg?.status == 'failed'
+                                    ? "text-[#f64949fe]"
+                                    : "text-[#2ba150fe]"
+                                }mt-0.5`}>
+                                {errMsg.message}
+                            </span>
+                        )}
+                        {
+                            isSubmitting ? <Loading /> : <CustomButton
+                                type="submit"
+                                containerStyle={
+                                    'inline-flex justify-center rounded-md bg-blue px-8 py-3 text-sm font-medium text-white outline-none'}
+                                title='Login'
+                            />
+                        }
                     </form>
+                    <p className='text-ascent-2 text-sm text-center'>
+                        Dont have an account?
+                        <Link
+                        to='/register'
+                        className='text-[#065ad8] font-semibold ml-2 cursor-pointer'
+                        >
+                            Create Account
+                        </Link>
+
+                    </p>
                 </div>
 
             </div>
